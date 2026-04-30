@@ -1,27 +1,95 @@
 import requests
+import tkinter as tk
+from tkinter import messagebox
+
+API_URL = "https://swapi.dev/api/people/"
 
 
-def fetch_data(option):
-  url = f"https://swapi.mimo.dev/api/{option}/"
-  data = []
-  try:
-    response = requests.get(url)
-    response.raise_for_status()
+def fetch_character():
+    character_id = entry.get().strip()
 
-    data = response.json()
-    print(f"Successfully fetched {len(data)} entities")
-  except requests.HTTPError as e:
-    print(f"Error fetching data: {e}")
-    return None
+    if not character_id.isdigit():
+        messagebox.showerror("Invalid Input", "Enter a character number, like 1, 2, or 3.")
+        return
 
-  return data
+    try:
+        response = requests.get(API_URL + character_id)
+        response.raise_for_status()
+        data = response.json()
 
-option = input("STARWARS data").lower().strip()
-data = fetch_data(option)
+        result_text.set(
+            f"Name: {data['name']}\n"
+            f"Height: {data['height']} cm\n"
+            f"Mass: {data['mass']} kg\n"
+            f"Hair Color: {data['hair_color']}\n"
+            f"Skin Color: {data['skin_color']}\n"
+            f"Eye Color: {data['eye_color']}\n"
+            f"Birth Year: {data['birth_year']}\n"
+            f"Gender: {data['gender']}"
+        )
 
-if data:
-  for entity in data:
-    print(entity["name"])
-else:
-    print("Unable to download data")
+    except requests.exceptions.RequestException:
+        messagebox.showerror("Error", "Could not fetch data. Check your internet or try another number.")
 
+
+root = tk.Tk()
+root.title("Star Wars API Explorer")
+root.geometry("420x420")
+root.configure(bg="#3b2f2f")
+
+title = tk.Label(
+    root,
+    text="Star Wars API Explorer",
+    font=("Georgia", 20, "bold"),
+    bg="#3b2f2f",
+    fg="#f4d35e"
+)
+title.pack(pady=20)
+
+subtitle = tk.Label(
+    root,
+    text="Enter a character ID number",
+    font=("Georgia", 12),
+    bg="#3b2f2f",
+    fg="#f7ede2"
+)
+subtitle.pack()
+
+entry = tk.Entry(
+    root,
+    font=("Georgia", 14),
+    justify="center",
+    bg="#f7ede2",
+    fg="#2f1b0c",
+    width=15
+)
+entry.pack(pady=10)
+
+button = tk.Button(
+    root,
+    text="Search Character",
+    font=("Georgia", 12, "bold"),
+    bg="#8b5e34",
+    fg="white",
+    activebackground="#a47148",
+    activeforeground="white",
+    command=fetch_character
+)
+button.pack(pady=10)
+
+result_text = tk.StringVar()
+result_label = tk.Label(
+    root,
+    textvariable=result_text,
+    font=("Georgia", 12),
+    bg="#5c4033",
+    fg="#fff3b0",
+    justify="left",
+    padx=20,
+    pady=20,
+    width=35,
+    height=10
+)
+result_label.pack(pady=20)
+
+root.mainloop()
