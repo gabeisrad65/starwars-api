@@ -69,6 +69,7 @@ entry = tk.Entry(
     width=15
 )
 entry.pack(pady=10)
+entry.bind("<Return>", lambda event: fetch_character())
 
 button = tk.Button(
     root,
