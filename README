@@ -1,0 +1,26 @@
+# Star Wars API Client (Python)
+
+This project is a Python script that fetches and displays data from the Star Wars API (SWAPI).
+
+## Features
+
+* Fetches Star Wars character data
+* Handles API requests using Python
+* Parses and displays JSON responses
+
+## Tech Stack
+
+* Python
+* requests
+* REST API (SWAPI)
+
+## How to Run
+
+```bash
+pip install requests
+python main.py
+```
+
+## Example Output
+
+Displays Star Wars character or film data directly in the console.
