@@ -2,34 +2,39 @@ import requests
 import tkinter as tk
 from tkinter import messagebox
 
-API_URL = "https://swapi.dev/api/people/"
+API_URL = "https://www.swapi.tech/api/people/"
 
 
 def fetch_character():
     character_id = entry.get().strip()
 
     if not character_id.isdigit():
-        messagebox.showerror("Invalid Input", "Enter a character number, like 1, 2, or 3.")
+        messagebox.showerror("Invalid Input", "Enter a number like 1, 2, or 3.")
         return
 
     try:
-        response = requests.get(API_URL + character_id)
+        response = requests.get(API_URL + character_id, timeout=10)
         response.raise_for_status()
+
         data = response.json()
+        character = data["result"]["properties"]
 
         result_text.set(
-            f"Name: {data['name']}\n"
-            f"Height: {data['height']} cm\n"
-            f"Mass: {data['mass']} kg\n"
-            f"Hair Color: {data['hair_color']}\n"
-            f"Skin Color: {data['skin_color']}\n"
-            f"Eye Color: {data['eye_color']}\n"
-            f"Birth Year: {data['birth_year']}\n"
-            f"Gender: {data['gender']}"
+            f"Name: {character['name']}\n"
+            f"Height: {character['height']} cm\n"
+            f"Mass: {character['mass']} kg\n"
+            f"Hair Color: {character['hair_color']}\n"
+            f"Skin Color: {character['skin_color']}\n"
+            f"Eye Color: {character['eye_color']}\n"
+            f"Birth Year: {character['birth_year']}\n"
+            f"Gender: {character['gender']}"
         )
 
-    except requests.exceptions.RequestException:
-        messagebox.showerror("Error", "Could not fetch data. Check your internet or try another number.")
+    except requests.exceptions.RequestException as error:
+        messagebox.showerror("Connection Error", f"Could not fetch data:\n\n{error}")
+
+    except KeyError:
+        messagebox.showerror("Data Error", "The API response format changed.")
 
 
 root = tk.Tk()
@@ -71,13 +76,12 @@ button = tk.Button(
     font=("Georgia", 12, "bold"),
     bg="#8b5e34",
     fg="white",
-    activebackground="#a47148",
-    activeforeground="white",
     command=fetch_character
 )
 button.pack(pady=10)
 
 result_text = tk.StringVar()
+
 result_label = tk.Label(
     root,
     textvariable=result_text,
